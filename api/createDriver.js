@@ -1,13 +1,15 @@
+// api/createDriver.js
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
 // Adicionando CORS
 const corsOptions = {
-  origin: '*', // Permite requisições de qualquer origem. Você pode mudar para um domínio específico, como 'https://frontend-app.vercel.app'
+  origin: '*', // Permite requisições de qualquer origem. Você pode mudar para um domínio específico.
 };
 
 module.exports = async (req, res) => {
+  // Usando CORS
   cors(corsOptions)(req, res, () => {
     if (req.method === 'POST') {
       const { nome, rut } = req.body;
@@ -18,7 +20,7 @@ module.exports = async (req, res) => {
 
       try {
         // Caminho para o arquivo drivers.json
-        const filePath = path.join(__dirname, '../../data/drivers.json');
+        const filePath = path.join(__dirname, '../data/drivers.json');
 
         // Lê os dados do arquivo JSON existente
         let drivers = [];
