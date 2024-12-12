@@ -2,5 +2,9 @@
   {
     "nome": "Teste 1",
     "rut": "1223456"
+  },
+  {
+    "nome": "teste postman",
+    "rut": "123456"
   }
 ]
