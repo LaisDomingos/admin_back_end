@@ -1,26 +1,24 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const driverRoutes = require('./routes/driverRoutes'); // Importa as rotas
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const port = 5000;
 
-// Middlewares
-app.use(cors());
-app.use(bodyParser.json());
+// Configura o CORS para permitir múltiplos origins
+app.use(cors({
+  origin: ['https://admin-front-end-pied.vercel.app', 'http://localhost:3000'],
+  methods: 'GET,POST',
+  allowedHeaders: 'Content-Type',
+}));
 
-// Rotas
-app.get('/', (req, res) => {
-    res.send('API funcionando!');
-});
+// Configuração para interpretar o corpo da requisição em JSON
+app.use(express.json());
 
-const driverRoutes = require('./routes/driverRoutes');
+// Usando as rotas
 app.use('/api', driverRoutes);
 
-// Iniciando o servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+// Inicia o servidor
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });

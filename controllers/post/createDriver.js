@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
 
       try {
         // Caminho para o arquivo drivers.json
-        const filePath = path.join(__dirname, 'drivers.json');
+        const filePath = path.join(__dirname, '../../data/drivers.json');
 
         // Lê os dados do arquivo JSON existente
         let drivers = [];
