@@ -7,7 +7,7 @@ const port = 5000;
 
 // Configura o CORS para permitir múltiplos origins
 app.use(cors({
-  origin: ['https://admin-front-end-pied.vercel.app', 'http://localhost:3000'],
+  origin: ['https://admin-front-end-pied.vercel.app/driver', 'http://localhost:3000'],
   methods: 'GET,POST',
   allowedHeaders: 'Content-Type',
 }));
