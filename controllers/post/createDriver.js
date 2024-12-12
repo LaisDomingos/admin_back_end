@@ -1,46 +1,45 @@
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
-const createDriver = (req, res) => {
-    const { nome, rut } = req.body;
-
-    if (!nome || !rut) {
-        return res.status(400).json({ message: 'Nome e RUT são obrigatórios' });
-    }
-
-    // Caminho para o arquivo onde os dados serão armazenados
-    const filePath = path.join(__dirname, '../../data/drivers.json');
-
-    let drivers = [];
-
-    try {
-        // Verifica se o arquivo existe
-        if (fs.existsSync(filePath)) {
-            const fileData = fs.readFileSync(filePath, 'utf-8');
-            drivers = fileData ? JSON.parse(fileData) : []; // Inicializa com [] se o arquivo estiver vazio
-        }
-    } catch (err) {
-        console.error('Erro ao ler o arquivo JSON:', err.message);
-        return res.status(500).json({ message: 'Erro interno ao acessar o banco de dados' });
-    }
-
-    // Adiciona o novo motorista
-    const newDriver = { nome, rut, id: Date.now().toString() }; // Gera um ID único
-    drivers.push(newDriver);
-
-    try {
-        // Salva os dados atualizados no arquivo
-        fs.writeFileSync(filePath, JSON.stringify(drivers, null, 2));
-    } catch (err) {
-        console.error('Erro ao escrever no arquivo JSON:', err.message);
-        return res.status(500).json({ message: 'Erro interno ao salvar os dados' });
-    }
-
-    // Retorna a resposta ao cliente
-    res.status(201).json({
-        message: 'Motorista criado com sucesso',
-        driver: newDriver,
-    });
+// Adicionando CORS
+const corsOptions = {
+  origin: '*', // Permite requisições de qualquer origem. Você pode mudar para um domínio específico, como 'https://frontend-app.vercel.app'
 };
 
-module.exports = createDriver;
+module.exports = async (req, res) => {
+  cors(corsOptions)(req, res, () => {
+    if (req.method === 'POST') {
+      const { nome, rut } = req.body;
+
+      if (!nome || !rut) {
+        return res.status(400).json({ message: 'Nome e RUT são obrigatórios!' });
+      }
+
+      try {
+        // Caminho para o arquivo drivers.json
+        const filePath = path.join(__dirname, 'drivers.json');
+
+        // Lê os dados do arquivo JSON existente
+        let drivers = [];
+        if (fs.existsSync(filePath)) {
+          const data = fs.readFileSync(filePath);
+          drivers = JSON.parse(data);
+        }
+
+        // Adiciona o novo motorista ao arquivo
+        drivers.push({ nome, rut });
+
+        // Salva os dados no arquivo drivers.json
+        fs.writeFileSync(filePath, JSON.stringify(drivers, null, 2));
+
+        return res.status(201).json({ message: 'Motorista adicionado com sucesso!', driver: { nome, rut } });
+      } catch (error) {
+        return res.status(500).json({ message: 'Erro ao salvar motorista.', error: error.message });
+      }
+    } else {
+      // Caso o método não seja POST
+      res.status(405).json({ message: 'Método não permitido' });
+    }
+  });
+};
