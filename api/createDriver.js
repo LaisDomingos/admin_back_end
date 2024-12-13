@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     try {
       // Conecta ao MongoDB
       const { db } = await connectToDatabase();
-      const collection = db.collection('motoristas');  // 'motoristas' é o nome da coleção
+      const collection = db.collection('drivers');  // 'motoristas' é o nome da coleção
 
       // Insere o motorista na coleção
       const result = await collection.insertOne({ nome, rut });
