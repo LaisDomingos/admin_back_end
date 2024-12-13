@@ -1,6 +1,16 @@
-import connectToDatabase from '../lib/dbConnect';  // Correção no caminho
+import connectToDatabase from '../lib/dbConnect'; // Importa a conexão com o banco de dados
 
 export default async (req, res) => {
+  // Configuração de CORS
+  res.setHeader('Access-Control-Allow-Origin', 'https://admin-front-end-pied.vercel.app'); // Permite apenas o frontend especificado
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Métodos permitidos
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Headers permitidos
+
+  // Tratamento de requisições OPTIONS (Preflight)
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end(); // Retorna sem conteúdo para requisições OPTIONS
+  }
+
   if (req.method === 'POST') {
     const { nome, rut } = req.body;
     if (!nome || !rut) {
