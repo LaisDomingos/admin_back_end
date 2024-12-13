@@ -6,5 +6,9 @@
   {
     "nome": "teste postman",
     "rut": "123456"
+  },
+  {
+    "nome": "Test salvar",
+    "rut": "2502555"
   }
 ]
