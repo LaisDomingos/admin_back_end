@@ -1,4 +1,3 @@
-// testConnection.js
 import { MongoClient } from 'mongodb';
 
 const uri = 'mongodb+srv://vercel-admin-user-675c3dfa6fd4044f569d99d0:PG6P6ypKpTzBsCmn@cluster0.h0plm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';

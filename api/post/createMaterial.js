@@ -1,4 +1,4 @@
-import connectToDatabase from '../lib/dbConnect'; // Importa a conexão com o banco de dados
+import connectToDatabase from '../../lib/dbConnect'; // Importa a conexão com o banco de dados
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -21,20 +21,20 @@ export default async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    const { nome, rut } = req.body;
-    if (!nome || !rut) {
-      return res.status(400).json({ message: 'Nome e RUT são obrigatórios!' });
+    const { code, description, id_mat_operation_type, label } = req.body;
+    if (!code || !description || !id_mat_operation_type || !label) {
+      return res.status(400).json({ message: 'Código, descrição, id operação e label são obrigatórios!' });
     }
 
     try {
       const { db } = await connectToDatabase();
-      const collection = db.collection('drivers');
+      const collection = db.collection('material');
 
-      const result = await collection.insertOne({ nome, rut });
+      const result = await collection.insertOne({ code, description, id_mat_operation_type, label });
 
       return res.status(201).json({
-        message: 'Motorista criado com sucesso!',
-        driver: { nome, rut },
+        message: 'Material criado com sucesso!',
+        planning: { code, description, id_mat_operation_type, label},
         _id: result.insertedId,
       });
     } catch (error) {
