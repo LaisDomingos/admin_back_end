@@ -21,21 +21,20 @@ export default async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    const { nome, rut } = req.body;
-    const ativo = 1;
-    if (!nome || !rut) {
-      return res.status(400).json({ message: 'Nome e RUT são obrigatórios!' });
+    const { nome, rut, supplyer_id } = req.body;
+    if (!nome || !rut || !supplyer_id) {
+      return res.status(400).json({ message: 'Nome, RUT e Supplyer_id são obrigatórios!' });
     }
 
     try {
       const { db } = await connectToDatabase();
       const collection = db.collection('drivers');
 
-      const result = await collection.insertOne({ nome, rut, ativo});
+      const result = await collection.insertOne({ nome, rut, supplyer_id});
 
       return res.status(201).json({
         message: 'Motorista criado com sucesso!',
-        driver: { nome, rut, ativo},
+        driver: { nome, rut, supplyer_id},
         _id: result.insertedId,
       });
     } catch (error) {
