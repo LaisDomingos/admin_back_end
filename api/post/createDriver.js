@@ -30,7 +30,7 @@ export default async (req, res) => {
       const { db } = await connectToDatabase();
       const collection = db.collection('drivers');
 
-      const result = await collection.insertOne({ nome, rut, supplyer_id});
+      const result = await collection.insertOne({ name, rut, supplyer_id});
 
       return res.status(201).json({
         message: 'Motorista criado com sucesso!',
