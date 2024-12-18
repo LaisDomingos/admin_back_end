@@ -21,8 +21,8 @@ export default async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    const { nome, rut, supplyer_id } = req.body;
-    if (!nome || !rut || !supplyer_id) {
+    const { name, rut, supplyer_id } = req.body;
+    if (!name || !rut || !supplyer_id) {
       return res.status(400).json({ message: 'Nome, RUT e Supplyer_id são obrigatórios!' });
     }
 
@@ -34,7 +34,7 @@ export default async (req, res) => {
 
       return res.status(201).json({
         message: 'Motorista criado com sucesso!',
-        driver: { nome, rut, supplyer_id},
+        driver: { name, rut, supplyer_id},
         _id: result.insertedId,
       });
     } catch (error) {
