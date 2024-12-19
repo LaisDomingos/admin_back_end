@@ -25,7 +25,7 @@ export default async (req, res) => {
 
   if (req.method === 'POST') {
     const { name, rutNumber, supplyer_id } = req.body;
-    
+    console.log(req)
     // Verificando se os dados necessários estão presentes
     if (!name || !rutNumber || !supplyer_id) {
       return res.status(400).json({ message: 'Nome, RUT e Supplyer_id são obrigatórios!' });
