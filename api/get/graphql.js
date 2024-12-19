@@ -4,8 +4,34 @@ import express from 'express';
 import cors from 'cors';
 import { json } from 'body-parser';
 import connectToDatabase from '../../lib/dbConnect'; // Atualize para o caminho correto
-import jwt from 'jsonwebtoken'; // Adicione a biblioteca jwt para decodificação do token
-import { ObjectId } from 'mongodb'; // Certifique-se de importar o ObjectId
+import jwt from 'jsonwebtoken'; // Importa o jwt para validar tokens
+import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb';
+
+dotenv.config();
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://admin-front-end-pied.vercel.app',
+];
+
+// Middleware CORS
+const corsOptions = (req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Tratamento de requisições OPTIONS
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  next();
+};
 
 // Definição do Schema GraphQL
 const typeDefs = gql`
@@ -35,7 +61,8 @@ const resolvers = {
         if (!user) throw new Error('Usuário não encontrado');
         return { id: user._id.toString(), ...user }; // Retorna o usuário encontrado
       } catch (error) {
-        throw new Error('Token inválido');
+        console.error('Erro ao decodificar o token:', error);
+        throw new Error('Token inválido ou expirado');
       }
     },
   }
@@ -48,7 +75,7 @@ const server = new ApolloServer({ typeDefs, resolvers });
 server.start().then(() => {
   app.use(
     '/graphql',
-    cors(),
+    cors(corsOptions),
     json(),
     expressMiddleware(server, {
       context: ({ req }) => ({
@@ -57,7 +84,4 @@ server.start().then(() => {
     })
   );
   
-  app.listen(4000, () => {
-    console.log('Servidor rodando em http://localhost:4000/graphql');
-  });
 });
