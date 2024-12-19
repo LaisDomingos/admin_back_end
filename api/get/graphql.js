@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import { json } from 'body-parser';
 import connectToDatabase from '../../lib/dbConnect'; // Atualize para o caminho correto
+import jwt from 'jsonwebtoken'; // Adicione a biblioteca jwt para decodificação do token
 import { ObjectId } from 'mongodb'; // Certifique-se de importar o ObjectId
 
 // Definição do Schema GraphQL
@@ -15,46 +16,29 @@ const typeDefs = gql`
   }
 
   type Query {
-    user(id: ID!): User
-    users: [User!]!
-  }
-
-  type Mutation {
-    createUser(name: String!, email: String!): User
+    me: User
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    // Busca um usuário específico pelo ID
-    user: async (_parent, args) => {
-      const { db } = await connectToDatabase();
-      const user = await db.collection('users').findOne({ _id: new ObjectId(args.id) });
-      if (!user) throw new Error('Usuário não encontrado');
-      return { id: user._id.toString(), ...user }; // Retorna o usuário encontrado
+    // Busca o usuário autenticado
+    me: async (_parent, _args, context) => {
+      const { token } = context;
+      if (!token) throw new Error('Token não fornecido');
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { db } = await connectToDatabase();
+        const user = await db.collection('users').findOne({ _id: new ObjectId(decoded.userId) });
+        if (!user) throw new Error('Usuário não encontrado');
+        return { id: user._id.toString(), ...user }; // Retorna o usuário encontrado
+      } catch (error) {
+        throw new Error('Token inválido');
+      }
     },
-    // Busca todos os usuários
-    users: async () => {
-      const { db } = await connectToDatabase();
-      const users = await db.collection('users').find().toArray();
-      return users.map(user => ({
-        id: user._id.toString(),
-        ...user,
-      }));
-    },
-  },
-  Mutation: {
-    // Cria um novo usuário
-    createUser: async (_parent, args) => {
-      const { db } = await connectToDatabase();
-      const result = await db.collection('users').insertOne({
-        name: args.name,
-        email: args.email,
-      });
-      return { id: result.insertedId.toString(), name: args.name, email: args.email };
-    },
-  },
+  }
 };
 
 // Configurando o servidor Apollo
@@ -66,7 +50,14 @@ server.start().then(() => {
     '/graphql',
     cors(),
     json(),
-    expressMiddleware(server)
+    expressMiddleware(server, {
+      context: ({ req }) => ({
+        token: req.headers.authorization ? req.headers.authorization.split(' ')[1] : null,
+      })
+    })
   );
-
+  
+  app.listen(4000, () => {
+    console.log('Servidor rodando em http://localhost:4000/graphql');
+  });
 });
