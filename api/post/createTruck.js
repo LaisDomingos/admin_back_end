@@ -34,19 +34,18 @@ export default async (req, res) => {
       const { db } = await connectToDatabase();
       const collection = db.collection('truck');
 
-      // Inserindo o motorista no banco de dados
+      // Inserindo o caminhão no banco de dados
       const subscribeDate = new Date().toISOString(); // Adicionando a data de inscrição no formato especificado
       const result = await collection.insertOne({ plate, brand, subscribeDate });
 
-      // Retorno com dados do novo motorista
+      // Retorno com dados do novo caminhão
       return res.status(201).json({
         message: 'Caminhão criado com sucesso!',
-        truck: { plate, brand, subscribeDate },
-        _id: result.insertedId,
+        truck: { _id: result.insertedId, plate, brand, subscribeDate },
       });
     } catch (error) {
-      console.error('Erro ao salvar motorista:', error); // Mensagem de erro mais informativa
-      return res.status(500).json({ message: 'Erro ao salvar motorista' });
+      console.error('Erro ao salvar caminhão:', error); // Mensagem de erro mais informativa
+      return res.status(500).json({ message: 'Erro ao salvar caminhão' });
     }
   }
 
