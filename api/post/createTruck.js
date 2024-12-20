@@ -24,9 +24,9 @@ export default async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    const { patente, marca, } = req.body;
+    const { plate, brand } = req.body;
     // Verificando se os dados necessários estão presentes
-    if (!patente || !marca ) {
+    if (!plate || !brand ) {
       return res.status(400).json({ message: 'Patente e marca são obrigatórios!' });
     }
 
@@ -35,12 +35,13 @@ export default async (req, res) => {
       const collection = db.collection('truck');
 
       // Inserindo o motorista no banco de dados
-      const result = await collection.insertOne({ patente, marca });
+      const subscribeDate = new Date().toISOString(); // Adicionando a data de inscrição no formato especificado
+      const result = await collection.insertOne({ plate, brand, subscribeDate });
 
       // Retorno com dados do novo motorista
       return res.status(201).json({
         message: 'Caminhão criado com sucesso!',
-        truck: { patente, marca },
+        truck: { plate, brand, subscribeDate },
         _id: result.insertedId,
       });
     } catch (error) {
