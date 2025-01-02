@@ -21,27 +21,34 @@ export default async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    const { code, description, id_mat_operation_type, label } = req.body;
-    if (!code || !description || !id_mat_operation_type || !label) {
-      return res.status(400).json({ message: 'Código, descrição, id operação e label são obrigatórios!' });
+    // Desestruturação dos campos recebidos
+    const { code, description, id_mat_operation_type, label, transformationProcess } = req.body;
+
+    // Validação dos campos obrigatórios
+    if (!code || !description || !id_mat_operation_type || !label || !transformationProcess) {
+      return res.status(400).json({ message: 'Código, descrição, id operação, label e processo de transformação são obrigatórios!' });
     }
 
     try {
+      // Conexão com o banco de dados
       const { db } = await connectToDatabase();
       const collection = db.collection('material');
 
-      const result = await collection.insertOne({ code, description, id_mat_operation_type, label });
+      // Inserção do material no banco
+      const result = await collection.insertOne({ code, description, id_mat_operation_type, label, transformationProcess });
 
+      // Retorno de sucesso com os dados do material
       return res.status(201).json({
         message: 'Material criado com sucesso!',
-        planning: { code, description, id_mat_operation_type, label},
+        material: { code, description, id_mat_operation_type, label, transformationProcess },
         _id: result.insertedId,
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: 'Erro ao salvar motorista' });
+      return res.status(500).json({ message: 'Erro ao salvar material' });
     }
   }
 
+  // Se o método não for POST, retorna erro 405
   res.status(405).json({ message: 'Método não permitido' });
 };
