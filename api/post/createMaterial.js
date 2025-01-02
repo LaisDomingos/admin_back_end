@@ -22,10 +22,10 @@ export default async (req, res) => {
 
   if (req.method === 'POST') {
     // Desestruturação dos campos recebidos
-    const { code, description, id_mat_operation_type, label, transformationProcess } = req.body;
+    const { code, description, id_mat_operation_type, label, process_id } = req.body;
 
     // Validação dos campos obrigatórios
-    if (!code || !description || !id_mat_operation_type || !label || !transformationProcess) {
+    if (!code || !description || !id_mat_operation_type || !label || !process_id) {
       return res.status(400).json({ message: 'Código, descrição, id operação, label e processo de transformação são obrigatórios!' });
     }
 
@@ -35,12 +35,12 @@ export default async (req, res) => {
       const collection = db.collection('material');
 
       // Inserção do material no banco
-      const result = await collection.insertOne({ code, description, id_mat_operation_type, label, transformationProcess });
+      const result = await collection.insertOne({ code, description, id_mat_operation_type, label, process_id });
 
       // Retorno de sucesso com os dados do material
       return res.status(201).json({
         message: 'Material criado com sucesso!',
-        material: { code, description, id_mat_operation_type, label, transformationProcess },
+        material: { code, description, id_mat_operation_type, label, process_id },
         _id: result.insertedId,
       });
     } catch (error) {
